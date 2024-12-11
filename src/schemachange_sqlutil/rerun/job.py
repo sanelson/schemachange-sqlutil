@@ -24,6 +24,7 @@ class RerunJob(Job):
         )
 
         if self.config.dry_run:
+            logger.info("Dry run, script not applied")
             self.scripts_skipped += 1
         else:
             self.scripts_applied += 1
