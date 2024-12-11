@@ -58,7 +58,7 @@ class RerunJob(Job):
             regex = None
             try:
                 # Compile the pattern
-                regex = re.compile(pattern)
+                regex = re.compile(pattern, re.IGNORECASE)
             except re.error as e:
                 logger.error(
                     "Invalid repeatable pattern",
