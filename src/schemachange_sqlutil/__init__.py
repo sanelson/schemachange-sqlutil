@@ -3,7 +3,7 @@ from schemachange.config.DeployConfig import DeployConfig
 from schemachange.config.Plugin import Plugin, PluginBaseConfig, PluginJobConfig
 
 # from schemachange_sqlutil.rerun import RerunJob
-from schemachange_sqlutil.rerun import RerunJob
+from schemachange_sqlutil.rerun import job
 import dataclasses
 
 logger = structlog.getLogger(__name__)
@@ -89,7 +89,7 @@ class RerunPluginConfig(PluginJobConfig):
         print("Running RerunPlugin")
 
         # Create a new RerunJob instance
-        rerun_job = RerunJob(config=self, session=session)
+        rerun_job = job.RerunJob(config=self, session=session)
 
         rerun_job.run()
         return
