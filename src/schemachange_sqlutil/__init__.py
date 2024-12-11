@@ -50,7 +50,7 @@ class SQLUtilPluginConfig(PluginBaseConfig):
     ]
 
     def plugin_run(self):
-        print("Running SQLUtilPlugin")
+        logger.info("Running SQLUtilPlugin")
         return
 
 
@@ -86,7 +86,7 @@ class RerunPluginConfig(PluginJobConfig):
     ]
 
     def plugin_run(self, session):
-        print("Running RerunPlugin")
+        logger.info("Running RerunPlugin")
 
         # Create a new RerunJob instance
         rerun_job = job.RerunJob(config=self, session=session)
@@ -138,9 +138,9 @@ class DeployPluginConfig(PluginBaseConfig, DeployConfig):
     ]
 
     def pre_command_tasks(self):
-        print("Pre-command tasks")
+        logger.info("Pre-command tasks")
         return
 
     def post_command_tasks(self):
-        print("Post-command tasks")
+        logger.info("Post-command tasks")
         return
