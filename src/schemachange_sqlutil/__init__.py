@@ -1,6 +1,9 @@
 import structlog
 from schemachange.config.DeployConfig import DeployConfig
-from schemachange.config.Plugin import Plugin, PluginBaseConfig
+from schemachange.config.Plugin import Plugin, PluginBaseConfig, PluginJobConfig
+
+# from schemachange_sqlutil.rerun import RerunJob
+from schemachange_sqlutil.rerun import job
 import dataclasses
 
 logger = structlog.getLogger(__name__)
@@ -22,6 +25,7 @@ class SchemachangePlugin(Plugin):
         self.plugin_classes = {
             "deploy": DeployPluginConfig,
             "sqlutil": SQLUtilPluginConfig,
+            "rerun": RerunPluginConfig,
         }
 
 
@@ -46,7 +50,48 @@ class SQLUtilPluginConfig(PluginBaseConfig):
     ]
 
     def plugin_run(self):
-        print("Running SQLUtilPlugin")
+        logger.info("Running SQLUtilPlugin")
+        return
+
+
+@dataclasses.dataclass(frozen=True)
+class RerunPluginConfig(PluginJobConfig):
+    # Define the dataclass attributes for each plugin argument
+    rerun_repeatable: bool = False  # Default value for the --rerun-repeatable argument
+    rerun_repeatable_pattern: str = (
+        None  # Default value for the --rerun-repeatable-pattern argument
+    )
+
+    plugin_subcommand = "rerun"
+    #    plugin_parent_arguments = []
+    plugin_subcommand_arguments = [
+        {
+            "name_or_flags": [
+                "--rerun-repeatable",
+            ],
+            "action": "store_const",
+            "const": True,
+            "default": None,
+            "help": "Rerun ALL repeatable scripts (the default is False)",
+            "required": False,
+        },
+        {
+            "name_or_flags": [
+                "--rerun-repeatable-pattern",
+            ],
+            "type": str,
+            "help": "Rerun repeatable scripts that match the provided PCRE regex pattern, the default is [R__*.sql(.jinja)?]",
+            "required": False,
+        },
+    ]
+
+    def plugin_run(self, session):
+        logger.info("Running RerunPlugin")
+
+        # Create a new RerunJob instance
+        rerun_job = job.RerunJob(config=self, session=session)
+
+        rerun_job.run()
         return
 
 
@@ -55,6 +100,9 @@ class DeployPluginConfig(PluginBaseConfig, DeployConfig):
     # Define the dataclass attributes for each plugin argument
     run_deps: bool = False  # Default value for the --run-deps argument
     rerun_repeatable: bool = False  # Default value for the --rerun-repeatable argument
+    rerun_repeatable_pattern: str = (
+        None  # Default value for the --rerun-repeatable-pattern argument
+    )
 
     plugin_subcommand = "deploy"
     plugin_parent_arguments = []
@@ -76,15 +124,23 @@ class DeployPluginConfig(PluginBaseConfig, DeployConfig):
             "action": "store_const",
             "const": True,
             "default": None,
-            "help": "Rerun ALL repeatable sc,ripts (the default is False)",
+            "help": "Rerun ALL repeatable scripts (the default is False)",
+            "required": False,
+        },
+        {
+            "name_or_flags": [
+                "--rerun-repeatable-pattern",
+            ],
+            "type": str,
+            "help": "Rerun repeatable scripts that match the provided PCRE regex pattern, the default is [R__*.sql(.jinja)?]",
             "required": False,
         },
     ]
 
     def pre_command_tasks(self):
-        print("Pre-command tasks")
+        logger.info("Pre-command tasks")
         return
 
     def post_command_tasks(self):
-        print("Post-command tasks")
+        logger.info("Post-command tasks")
         return
