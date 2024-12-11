@@ -2,7 +2,6 @@ import structlog
 from schemachange.config.DeployConfig import DeployConfig
 from schemachange.config.Plugin import Plugin, PluginBaseConfig, PluginJobConfig
 
-# from schemachange_sqlutil.rerun import RerunJob
 from schemachange_sqlutil.rerun import RerunJob
 import dataclasses
 
