@@ -50,7 +50,7 @@ class RerunJob(Job):
 
         elif self.config.rerun_repeatable_pattern:
             # Repeatable pattern runs against file path so in addition to the script name we can also include based on a folder
-            pattern = self.config.rerun_repeatable_pattern
+            pattern = self.config.rerun_repeatable_pattern.strip(" '")
             logger.info(
                 "Rerunning repeatable scripts with pattern",
                 pattern=pattern,
